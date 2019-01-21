@@ -165,11 +165,13 @@ class InsertFeaturesToLayer(QgsProcessingAlgorithm):
         return {self.OUTPUT: target}
 
     def transform_geom(self, geom, drop_coordinates, add_coordinates):
+
+        clone_geom = geom.constGet().clone()
         """Add/remove Z and remove M values"""
         if "Z" in drop_coordinates:
-            geom.get().dropZValue()
+            clone_geom.dropZValue()
         if "M" in drop_coordinates:
-            geom.get().dropMValue()
+            clone_geom.dropMValue()
         if "Z" in add_coordinates:
-            geom.get().addZValue()
+            clone_geom.addZValue()
         return geom

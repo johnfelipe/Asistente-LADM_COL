@@ -660,24 +660,27 @@ class TesQualityValidations(unittest.TestCase):
         feature = features[0]
         lines = feature.geometry()
         self.assertTrue(lines.isMultipart())
-        self.assertEqual(lines.constGet().numGeometries(), 4)
+        self.assertEqual(lines.constGet().clone().numGeometries(), 4)
 
-        line = lines.constGet().geometryN(0)
+
+        clone_geom = lines.constGet().clone()
+
+        line = clone_geom.geometryN(0)
         segments_info = self.qgis_utils.geometry.get_too_long_segments_from_simple_line(line, tolerance)
         self.assertEqual(len(segments_info), 2)
         self.validate_segments(segments_info, tolerance)
 
-        line = lines.constGet().geometryN(1)
+        line = clone_geom.geometryN(1)
         segments_info = self.qgis_utils.geometry.get_too_long_segments_from_simple_line(line, tolerance)
         self.assertEqual(len(segments_info), 1)
         self.validate_segments(segments_info, tolerance)
 
-        line = lines.constGet().geometryN(2)
+        line = clone_geom.geometryN(2)
         segments_info = self.qgis_utils.geometry.get_too_long_segments_from_simple_line(line, tolerance)
         self.assertEqual(len(segments_info), 0)
         self.validate_segments(segments_info, tolerance)
 
-        line = lines.constGet().geometryN(3)
+        line = clone_geom.geometryN(3)
         segments_info = self.qgis_utils.geometry.get_too_long_segments_from_simple_line(line, tolerance)
         self.assertEqual(len(segments_info), 1)
         self.validate_segments(segments_info, tolerance)
@@ -686,9 +689,10 @@ class TesQualityValidations(unittest.TestCase):
         feature = features[1]
         lines = feature.geometry()
         self.assertTrue(lines.isMultipart())
-        self.assertEqual(lines.constGet().numGeometries(), 1)
+        self.assertEqual(lines.constGet().clone().numGeometries(), 1)
 
-        line = lines.constGet().geometryN(0)
+        clone_geom = lines.constGet().clone()
+        line = clone_geom.geometryN(0)
         segments_info = self.qgis_utils.geometry.get_too_long_segments_from_simple_line(line, tolerance)
         self.assertEqual(len(segments_info), 1)
         self.validate_segments(segments_info, tolerance)

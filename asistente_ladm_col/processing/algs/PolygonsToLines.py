@@ -97,7 +97,7 @@ class PolygonsToLines(QgisFeatureBasedAlgorithm):
         return multi_wkb
 
     def convertToLines(self, geometry):
-        rings = self.getRings(geometry.constGet())
+        rings = self.getRings(geometry.constGet().clone())
         output_wkb = self.convertWkbToLines(geometry.wkbType())
         out_geom = None
         if QgsWkbTypes.flatType(output_wkb) == QgsWkbTypes.MultiLineString:
@@ -112,21 +112,6 @@ class PolygonsToLines(QgisFeatureBasedAlgorithm):
 
     def getRings(self, geometry):
         rings = []
-
-        # TODO: remove when the error is resolved
-        # Error: The expected object type is a QgsCurvePolygon but it receives a QgsPoint, however the WKT of the
-        #        QgsPoint corresponds to either a QgsPolygon or QgsMultiPolygon (yeap, it must be a bug in QGIS)
-        if type(geometry) == type(QgsPoint()):
-            geom = QgsGeometry().fromWkt(geometry.asWkt())
-            curve = None
-            if geom.isMultipart():
-                curve = QgsMultiPolygon()
-                curve.fromWkt(geom.asWkt())
-            else:
-                curve = QgsPolygon()
-                curve.fromWkt(geom.asWkt())
-
-            geometry = curve.toCurveType()
 
         if isinstance(geometry, QgsGeometryCollection):
             # collection

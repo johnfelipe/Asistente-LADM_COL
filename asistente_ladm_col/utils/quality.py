@@ -1498,14 +1498,15 @@ class QualityUtils(QObject):
         for feature in boundary_layer.getFeatures():
             lines = feature.geometry()
             if lines.isMultipart():
-                for part in range(lines.constGet().numGeometries()):
-                    line = lines.constGet().geometryN(part)
+                for part in range(lines.constGet().clone().numGeometries()):
+                    clone_geom = lines.constGet().clone()
+                    line = clone_geom.geometryN(part)
                     segments_info = self.qgis_utils.geometry.get_too_long_segments_from_simple_line(line, tolerance)
                     for segment_info in segments_info:
                         new_feature = QgsVectorLayerUtils().createFeature(error_layer, segment_info[0], {0:feature.id(), 1:segment_info[1]})
                         features.append(new_feature)
             else:
-                segments_info = self.qgis_utils.geometry.get_too_long_segments_from_simple_line(lines.constGet(), tolerance)
+                segments_info = self.qgis_utils.geometry.get_too_long_segments_from_simple_line(lines.constGet().clone(), tolerance)
                 for segment_info in segments_info:
                     new_feature = QgsVectorLayerUtils().createFeature(error_layer, segment_info[0], {0:feature.id(), 1:segment_info[1]})
                     features.append(new_feature)

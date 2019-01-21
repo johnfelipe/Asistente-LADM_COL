@@ -257,7 +257,7 @@ class ReportGenerator():
             plot_id = selected_plot[ID_FIELD]
 
             geometry = selected_plot.geometry()
-            abstract_geometry = geometry.get()
+            abstract_geometry = geometry.constGet().clone()
             if abstract_geometry.ringCount() > 1:
                 polygons_with_holes.append(str(plot_id))
                 self.log.logMessage(QCoreApplication.translate("ReportGenerator",

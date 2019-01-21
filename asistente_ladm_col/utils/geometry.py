@@ -86,13 +86,13 @@ class GeometryUtils(QObject):
                     single_polygon = None
 
                     if is_multipart:
-                        multi_polygon = polygon_geom.get()
+                        multi_polygon = polygon_geom.constGet().clone()
                         for part in range(multi_polygon.numGeometries()):
                             if multi_polygon.ringCount(part) > 1:
                                 has_inner_rings = True
                                 break
                     else:
-                        single_polygon = polygon_geom.get()
+                        single_polygon = polygon_geom.constGet().clone()
                         if single_polygon.numInteriorRings() > 0:
                             has_inner_rings = True
 
@@ -222,10 +222,11 @@ class GeometryUtils(QObject):
         """
         segments = []
         if geom.isMultipart():
-            for part in range(geom.constGet().numGeometries()):
-                segments.extend(self.get_polyline_as_single_segments(geom.constGet().geometryN(part)))
+            for part in range(geom.constGet().clone().numGeometries()):
+                clone_geom = geom.constGet().clone()
+                segments.extend(self.get_polyline_as_single_segments(clone_geom.geometryN(part)))
         else:
-            segments.extend(self.get_polyline_as_single_segments(geom.constGet()))
+            segments.extend(self.get_polyline_as_single_segments(geom.constGet().clone()))
         return segments
 
     def get_too_long_segments_from_simple_line(self, line, tolerance):
@@ -557,7 +558,7 @@ class GeometryUtils(QObject):
         ids = list()
         for feature in features:
             geometry = feature.geometry()
-            const_geom = geometry.constGet()
+            const_geom = geometry.constGet().clone()
             if geometry.isMultipart() and const_geom.partCount() > 1:
                 for i in range(const_geom.numGeometries()):
                     geom = QgsGeometry.fromWkt(const_geom.geometryN(i).asWkt())
@@ -652,27 +653,15 @@ class GeometryUtils(QObject):
 
             if is_multipart:
 
-                multi_polygon = polygon_geom.constGet()
-
-                # TODO: remove when the error is resolved
-                if type(multi_polygon) != type(QgsMultiPolygon()):
-                    geom = QgsMultiPolygon()
-                    geom.fromWkt(polygon_geom.asWkt())
-                    multi_polygon = geom
+                multi_polygon = polygon_geom.constGet().clone()
 
                 for part in range(multi_polygon.numGeometries()):
                     if multi_polygon.ringCount(part) > 1:
                         has_inner_rings = True
                         break
             else:
-                single_polygon = polygon_geom.constGet()
+                single_polygon = polygon_geom.constGet().clone()
 
-                # TODO: remove when the error is resolved
-                if type(single_polygon) != type(QgsPolygon()):
-                    geom = QgsPolygon()
-                    geom.fromWkt(polygon_geom.asWkt())
-                    single_polygon = geom
-                    
                 if single_polygon.numInteriorRings() > 0:
                     has_inner_rings = True
 
