@@ -244,11 +244,17 @@ class SettingsDialog(QDialog, DIALOG_UI):
             index = self.selected_db_combobox.findText(dbname_setting, Qt.MatchFixedString)
             if index >= 0:
                 self.selected_db_combobox.setCurrentIndex(index)
+            else:
+                # this is necessary to be able to run the unit tests, when the database is empty
+                self.selected_db_combobox.addItem(dbname_setting)
 
             schema_setting = dict_conn['schema']
             index = self.selected_schema_combobox.findText(schema_setting, Qt.MatchFixedString)
             if index >= 0:
                 self.selected_schema_combobox.setCurrentIndex(index)
+            else:
+                # this is necessary to be able to run the unit tests, when the database is empty
+                self.selected_schema_combobox.addItem(schema_setting)
 
             self.txt_pg_user.setText(dict_conn['user'])
             self.txt_pg_password.setText(dict_conn['password'])
